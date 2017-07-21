@@ -4,10 +4,8 @@ var winston = require('winston');
 var fs = require('fs');
 var moment = require('moment');
 var util = require('util');
-var mung = require('express-mung');
 var interceptor = require('express-interceptor');
 var _ = require('lodash');
-var uuid = require('uuid/v1');
 
 var path = require('path');
 
