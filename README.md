@@ -8,7 +8,7 @@ A multi-transport async logging library for node.js written on top of [winston](
 ```
     git clone https://github.com/rapidbizapps/rapid-node-logger logger
 ```
-Copy the above folder in node_modules (Remeber the folder name should be 'logger')
+Copy the above folder in node_modules **(Remember the folder name should be 'logger')**
 
 
 ## Usage
@@ -160,4 +160,4 @@ Streaming allows you to stream your logs back from your chosen transport.
 ```
     git clone https://github.com/rapidbizapps/rapid-node-logger logger
 ```
-Copy the above folder in node_modules (Remeber the folder name should be 'logger')
+Copy the above folder in node_modules **(Remember the folder name should be 'logger')**
