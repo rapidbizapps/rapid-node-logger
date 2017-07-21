@@ -1,6 +1,6 @@
 # Rapid Node Logger
 
-A multi-transport async logging library for node.js written on top of [winston](#http://github.com/winstonjs/winston). 
+A multi-transport async logging library for node.js written on top of [winston](http://github.com/winstonjs/winston). 
 
 
 ## Installation
@@ -70,8 +70,8 @@ By default, only the Console transport and File transport is set on the default 
 
 
 For more documentation about working with each individual transport supported by Winston see the 
-* [Console Transports](#https://github.com/winstonjs/winston/blob/master/docs/transports.md#console-transport)
-* [File Transports](#https://github.com/winstonjs/winston/blob/master/docs/transports.md#file-transport)
+* [Console Transports](https://github.com/winstonjs/winston/blob/master/docs/transports.md#console-transport)
+* [File Transports](https://github.com/winstonjs/winston/blob/master/docs/transports.md#file-transport)
 
 ### Logging Request and Response
 ```js
