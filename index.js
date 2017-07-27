@@ -52,9 +52,9 @@ var CustomLogger = function (options) {
 		options.console = _.assignIn(options.console, appliedToBoth);
 	}
 
-	fileOptions = _.assignIn(options.file, fileDefaultOptions);
+	fileOptions = _.assignIn(fileDefaultOptions, options.file);
 
-	consoleOptions = _.assignIn(options.console, consoleDefaultOptions);
+	consoleOptions = _.assignIn(consoleDefaultOptions, options.console);
 
 	if (!options.transports) {
 		options.transports = [
