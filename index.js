@@ -19,7 +19,7 @@ if (!fs.existsSync('./logs')) {
 
 var today = moment().utc().format('YYYYMMDD');
 
-var consoleOptions = {
+var consoleDefaultOptions = {
 	colorize: true,
 	// timestamp: function () {
 	// 	return moment().utc().toDate()
@@ -28,7 +28,7 @@ var consoleOptions = {
 	// silent: true
 }
 
-var fileOptions = {
+var fileDefaultOptions = {
 	filename: './logs/' + today + '.log',
 	handleExceptions: true,
 	humanReadableUnhandledException: true
@@ -41,13 +41,21 @@ var CustomLogger = function (options) {
 		options = {}
 	}
 
-	if (options.file) {
-		fileOptions = _.assignIn(options.file, fileOptions);
+	var consoleOptions = {}, fileOptions = {};
+
+	var appliedToBoth = _.clone(options);
+	delete appliedToBoth.file;
+	delete appliedToBoth.console;
+
+	if (!_.isEmpty(appliedToBoth)) {
+		options.file = _.assignIn(options.file, appliedToBoth);
+		options.console = _.assignIn(options.console, appliedToBoth);
 	}
 
-	if (options.console) {
-		consoleOptions = _.assignIn(options.console, consoleOptions);
-	}
+	fileOptions = _.assignIn(options.file, fileDefaultOptions);
+
+	consoleOptions = _.assignIn(options.console, consoleDefaultOptions);
+
 	if (!options.transports) {
 		options.transports = [
 			new (winston.transports.Console)(consoleOptions),
@@ -59,9 +67,10 @@ var CustomLogger = function (options) {
 
 util.inherits(CustomLogger, winston.Logger);
 
+
 var fileLogger = new (winston.Logger)({
 	transports: [
-		new (winston.transports.File)(fileOptions)
+		new (winston.transports.File)(fileDefaultOptions)
 	]
 });
 
