@@ -62,10 +62,10 @@ By default, only the Console transport and File transport is set on the default 
         },
         file : {
             //file transport options
-            filename : './logs/someFile.log'
+            
         }
     }
-    var logger = new Logger.Logger();
+    var logger = new Logger.Logger(options);
 ```
 
 
