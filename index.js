@@ -99,7 +99,8 @@ var logInterceptor = interceptor(function (req, res) {
 	return {
 		// Only json responses will be intercepted
 		isInterceptable: function () {
-			return res.get('Content-Type') && !/text\/html/.test(res.get('Content-Type'));
+			return res.get('Content-Type') && /application\/json/.test(res.get('Content-Type'));
+// 			return res.get('Content-Type') && !/text\/html/.test(res.get('Content-Type'));
 			// return /application\/json/.test(res.get('Content-Type'));
 		},
 
