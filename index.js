@@ -31,7 +31,10 @@ var consoleDefaultOptions = {
 var fileDefaultOptions = {
 	filename: './logs/' + today + '.log',
 	handleExceptions: true,
-	humanReadableUnhandledException: true
+	humanReadableUnhandledException: true,
+	prettyPrint: function ( object ){
+    		return JSON.stringify(object);
+	}
 };
 
 
