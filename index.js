@@ -1,6 +1,7 @@
 'use strict';
 
 var winston = require('winston');
+winston.transports.DailyRotateFile = require('winston-daily-rotate-file');
 var fs = require('fs');
 var moment = require('moment');
 var util = require('util');
@@ -29,14 +30,16 @@ var consoleDefaultOptions = {
 }
 
 var fileDefaultOptions = {
-	filename: './logs/' + today + '.log',
+	filename: '.log',
+	prepend: true,
+	datePattern: 'yyyyMMdd',
+	dirname: __dirname + "/../../logs",
 	handleExceptions: true,
 	humanReadableUnhandledException: true,
-	prettyPrint: function ( object ){
-    		return JSON.stringify(object);
+	prettyPrint: function (object) {
+		return JSON.stringify(object);
 	}
 };
-
 
 var CustomLogger = function (options) {
 
@@ -62,7 +65,7 @@ var CustomLogger = function (options) {
 	if (!options.transports) {
 		options.transports = [
 			new (winston.transports.Console)(consoleOptions),
-			new (winston.transports.File)(fileOptions)
+			new (winston.transports.DailyRotateFile)(fileOptions)
 		]
 	}
 	winston.Logger.call(this, options);
@@ -71,9 +74,10 @@ var CustomLogger = function (options) {
 util.inherits(CustomLogger, winston.Logger);
 
 
+var apiOptions = _.assignIn(fileDefaultOptions, {label : "API CALL"});
 var fileLogger = new (winston.Logger)({
 	transports: [
-		new (winston.transports.File)(fileDefaultOptions)
+		new (winston.transports.DailyRotateFile)(fileDefaultOptions)
 	]
 });
 
@@ -103,7 +107,7 @@ var logInterceptor = interceptor(function (req, res) {
 		// Only json responses will be intercepted
 		isInterceptable: function () {
 			return res.get('Content-Type') && /application\/json/.test(res.get('Content-Type'));
-// 			return res.get('Content-Type') && !/text\/html/.test(res.get('Content-Type'));
+			// 			return res.get('Content-Type') && !/text\/html/.test(res.get('Content-Type'));
 			// return /application\/json/.test(res.get('Content-Type'));
 		},
 
@@ -137,6 +141,9 @@ var logInterceptor = interceptor(function (req, res) {
 				if (!_.isEmpty(req.query)) {
 					newRec.query = req.query;
 				}
+
+				newRec.status = res.statusCode;
+				newRec.method = req.method;
 				fileLogger.log(level, res.statusCode, req.method, newRec);
 			}
 		}

@@ -13,6 +13,7 @@
     "fs": "0.0.1-security",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "winston-daily-rotate-file": "^1.4.6"
   }
 }
