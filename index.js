@@ -41,6 +41,10 @@ var fileDefaultOptions = {
 	}
 };
 
+if (!fs.existsSync( path.resolve(fileDefaultOptions.dirname))) {
+	fs.mkdirSync( path.resolve(fileDefaultOptions.dirname));
+}
+
 var CustomLogger = function (options) {
 
 	if (!options) {
