@@ -299,7 +299,7 @@ CustomLogger.prototype.query = function (options, callback) {
 				if (Array.isArray(value)) {
 					flag = checkIfPresent(value, _.get(log, key));
 				} else {
-					var regex = new RegExp(value);
+					var regex = new RegExp(_.get(log, key));
 					if (!regex.test(log[key])) {
 						flag = false;
 						return false;
