@@ -169,7 +169,7 @@ If `LOKI_HOST` is not set and no host is provided, Loki transport is simply skip
 
 ## Datadog Integration
 
-Send logs to Datadog for centralized logging, monitoring, and alerting.
+Send logs to Datadog for centralized logging, monitoring, and alerting. Uses Winston's native HTTP transport with batching support.
 
 ### Configuration via init()
 
@@ -180,7 +180,10 @@ app.use(require('logger').init({
         apiKey: "your-datadog-api-key",
         service: "my-app",
         hostname: "my-host",
-        ddtags: "env:production,version:1.0.0"
+        ddtags: "env:production,version:1.0.0",
+        batch: true,           // Enable batching (default: true)
+        batchInterval: 5000,   // Batch interval in ms (default: 5000)
+        batchCount: 10         // Max logs per batch (default: 10)
     }
 }));
 ```
@@ -215,6 +218,9 @@ If `DD_API_KEY` is not set and no apiKey is provided, Datadog transport is simpl
 | ddsource | string | 'nodejs' | Source identifier |
 | ddtags | string | '' | Additional tags (comma-separated) |
 | intakeRegion | string | `DD_SITE` env or 'us' | Datadog region: 'us', 'eu' |
+| batch | boolean | `true` | Enable log batching |
+| batchInterval | number | `5000` | Batch interval in milliseconds |
+| batchCount | number | `10` | Maximum logs per batch |
 
 ## Log Compression
 

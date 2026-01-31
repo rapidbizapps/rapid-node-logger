@@ -3,7 +3,6 @@
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const LokiTransport = require('winston-loki');
-const DatadogTransport = require('datadog-winston');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
@@ -206,10 +205,10 @@ function createLokiTransport(options, label) {
 }
 
 /**
- * Creates Datadog transport if configured
+ * Creates Datadog transport using Winston's native HTTP transport
  * @param {Object} options - Datadog configuration options
  * @param {string} label - Logger label for Datadog tags
- * @returns {DatadogTransport|null}
+ * @returns {winston.transports.Http|null}
  */
 function createDatadogTransport(options, label) {
 	if (!options && !datadogConfig) return null;
@@ -219,21 +218,36 @@ function createDatadogTransport(options, label) {
 
 	if (!apiKey) return null;
 
-	const ddOptions = {
-		apiKey: apiKey,
-		hostname: config.hostname || process.env.DD_HOSTNAME || require('os').hostname(),
-		service: config.service || process.env.DD_SERVICE || 'node-app',
-		ddsource: config.ddsource || 'nodejs',
-		ddtags: config.ddtags || '',
-		intakeRegion: config.intakeRegion || process.env.DD_SITE || 'us'
-	};
+	const hostname = config.hostname || process.env.DD_HOSTNAME || require('os').hostname();
+	const service = config.service || process.env.DD_SERVICE || 'node-app';
+	const ddsource = config.ddsource || 'nodejs';
+	let ddtags = config.ddtags || '';
+	const intakeRegion = config.intakeRegion || process.env.DD_SITE || 'us';
 
 	// Add label as a tag if provided
 	if (label) {
-		ddOptions.ddtags = ddOptions.ddtags ? `${ddOptions.ddtags},label:${label}` : `label:${label}`;
+		ddtags = ddtags ? `${ddtags},label:${label}` : `label:${label}`;
 	}
 
-	return new DatadogTransport(ddOptions);
+	// Determine Datadog intake host based on region
+	const ddHost = intakeRegion === 'eu'
+		? 'http-intake.logs.datadoghq.eu'
+		: 'http-intake.logs.datadoghq.com';
+
+	// Build the path with query parameters
+	let ddPath = `/api/v2/logs?dd-api-key=${apiKey}&ddsource=${ddsource}&service=${service}&hostname=${hostname}`;
+	if (ddtags) {
+		ddPath += '&ddtags=' + encodeURIComponent(ddtags);
+	}
+
+	return new winston.transports.Http({
+		host: ddHost,
+		path: ddPath,
+		ssl: true,
+		batch: config.batch !== undefined ? config.batch : true,
+		batchInterval: config.batchInterval || 5000,
+		batchCount: config.batchCount || 10
+	});
 }
 
 /**

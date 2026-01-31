@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "datadog-winston": "^1.6.0",
     "express-interceptor": "^1.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
