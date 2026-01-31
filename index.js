@@ -11,6 +11,7 @@ const interceptor = require('express-interceptor');
 const _ = require('lodash');
 
 // Global configuration (set via init())
+let initialized = false;
 let userKey = "user";
 let lokiConfig = null;
 let datadogConfig = null;
@@ -245,6 +246,10 @@ function createDatadogTransport(options, label) {
  * @param {Array} options.transports - Custom transports (overrides defaults)
  */
 function CustomLogger(options) {
+	if (!initialized) {
+		throw new Error('Logger.init() must be called before creating logger instances. Ensure init() is called at application startup before requiring modules that use the logger.');
+	}
+
 	if (!options) {
 		options = {};
 	}
@@ -689,6 +694,9 @@ module.exports = {
 	 */
 	init: function (options) {
 		if (!options) { options = {}; }
+
+		// Mark as initialized
+		initialized = true;
 
 		// Support both spellings (backward compatibility)
 		userKey = options.requestKey || options.requsetKey;

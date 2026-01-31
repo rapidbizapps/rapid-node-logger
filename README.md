@@ -29,15 +29,28 @@ cd node_modules/logger && npm install
 
 ### Basic Setup
 
+**Important:** `init()` must be called before creating any logger instances.
+
 ```js
-// Initialize in app.js (required for API logging)
-app.use(require('logger').init({ requestKey: "user" }));
+// 1. Initialize the logger FIRST (at application startup)
+require('logger').init({
+    requestKey: "user",
+    loki: { labels: { app: "my-app" } },      // Optional
+    datadog: { service: "my-app" },            // Optional
+    compressAfterDays: 5                       // Optional
+});
+
+// 2. Now you can require modules that create loggers
+const myController = require('./controllers/myController');
+
+// 3. Use as Express middleware for API logging
 app.use(require('logger').logApis);
 ```
 
 ### Creating a Logger
 
 ```js
+// In any module (after init() has been called)
 const Logger = require('logger');
 const logger = new Logger.Logger({ label: "MY_MODULE" });
 
@@ -297,15 +310,16 @@ From highest to lowest priority:
 
 ### Breaking Changes
 
-1. **Date Pattern Format** - Log filenames use uppercase format (`YYYYMMDD` instead of `yyyyMMdd`)
-2. **stream() Method** - Deprecated, use `query()` instead
+1. **init() Required First** - `Logger.init()` must be called before creating any logger instances
+2. **Date Pattern Format** - Log filenames use uppercase format (`YYYYMMDD` instead of `yyyyMMdd`)
+3. **stream() Method** - Deprecated, use `query()` instead
 
 ### What Stays the Same
 
 These patterns continue to work without any changes:
 
 ```js
-// Logger instantiation - NO CHANGES NEEDED
+// Logger instantiation - NO CHANGES NEEDED (but init() must be called first)
 const logger = new Logger.Logger({ label: "MY_LABEL" });
 
 // Logging methods - NO CHANGES NEEDED
@@ -393,6 +407,7 @@ app.use(require('logger').init({ requestKey: "user" }));
 - Added datadog-winston transport for Datadog integration
 - Added `compressAfterDays` option to gzip old log files automatically
 - Added support for both `requestKey` and `requsetKey` (backward compatibility)
+- **Breaking:** `init()` must now be called before creating logger instances
 - Modernized codebase to ES6+
 - Added 30-day log retention by default
 - Improved error handling and graceful shutdown
